@@ -26,6 +26,29 @@ SET regDate = NOW(),
 title = CONCAT('제목__', RAND()),
 `body` = CONCAT('내용__', RAND());
 
+# 회원 테스트데이터 생성
+INSERT INTO `member`
+SET regDate = NOW(),
+loginId = 'admin',
+`loginPw` = 'admin',
+`name` = '관리자';
+
+INSERT INTO `member`
+SET regDate = NOW(),
+loginId = 'test1',
+`loginPw` = 'test1',
+`name` = 'test1';
+
+INSERT INTO `member`
+SET regDate = NOW(),
+loginId = 'test2',
+`loginPw` = 'test2',
+`name` = 'test2';
+
+ALTER TABLE `article` ADD COLUMN memberId INT(10) UNSIGNED NOT NULL AFTER regDate;
+
+UPDATE article SET memberId = 2 WHERE memberId = 0;
+
 SELECT * FROM article;
 SELECT * FROM `member`;
 
