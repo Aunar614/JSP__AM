@@ -16,6 +16,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/doDelete")
 public class ArticleDoDeleteServlet extends HttpServlet {
@@ -25,6 +26,13 @@ public class ArticleDoDeleteServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		response.setContentType("text/html; charset=UTF-8");
+		HttpSession session = request.getSession();
+
+		if(session.getAttribute("loginedMemberLoginId") == null) {
+			response.getWriter().append(String.format("<script>alert('로그인 후 이용해주세요'); location.replace('../member/login');</script>"));
+			
+			return;
+		}
 
 		// DB 연결
 
@@ -46,7 +54,20 @@ public class ArticleDoDeleteServlet extends HttpServlet {
 
 			int id = Integer.parseInt(request.getParameter("id"));
 			
-			SecSql sql = SecSql.from("DELETE ");
+			SecSql sql = SecSql.from("SELECT *");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
+			
+			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
+			
+			int loginedMemberId = (int) session.getAttribute("loginedMemberId");
+			
+			if (loginedMemberId != (int) articleRow.get("memberId")) {
+				response.getWriter().append(String.format("<script>alert('해당 게시글에 대한 권한이 없습니다'); location.replace('../article/list');</script>"));
+
+			}
+			
+			sql = SecSql.from("DELETE ");
 			sql.append("FROM article");
 			sql.append("WHERE id = ?", id);
 
