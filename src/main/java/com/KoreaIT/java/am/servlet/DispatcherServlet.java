@@ -29,6 +29,15 @@ public class DispatcherServlet extends HttpServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		request.setCharacterEncoding("UTF-8");
 		
+		String requestUri = request.getRequestURI();
+		String[] requestUriBits = requestUri.split("/");
+		// [0]/s [1]/article [2]/list
+		
+		if (requestUriBits.length < 5) {
+			response.getWriter().append("올바른 요청이 아닙니다");
+			return;
+		}
+		
 		// DB 연결
 		
 		Connection conn = null;
@@ -67,15 +76,6 @@ public class DispatcherServlet extends HttpServlet {
 			request.setAttribute("isLogined", isLogined);
 			request.setAttribute("loginedMemberId", loginedMemberId);
 			request.setAttribute("loginedMemberRow", loginedMemberRow);
-			
-			String requestUri = request.getRequestURI();
-			String[] requestUriBits = requestUri.split("/");
-			// [0]/s [1]/article [2]/list
-			
-			if (requestUriBits.length < 5) {
-				response.getWriter().append("올바른 요청이 아닙니다");
-				return;
-			}
 			
 			String controllerName = requestUriBits[3];
 			String actionMethodName = requestUriBits[4];
